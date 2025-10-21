@@ -1,0 +1,35 @@
+name: Release Please
+
+# Release Please는 main 브랜치에 커밋이 푸시될 때마다:
+# 1. 릴리즈 PR을 생성/업데이트하거나
+# 2. PR이 머지되면 실제 릴리즈(태그/GitHub Release)를 생성합니다.
+# 테스트는 CI 워크플로우에서 별도로 실행됩니다.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          manifest-file: .release-please-manifest.json
+          config-file: release-please-config.json
+          # GitHub Actions 기본 토큰 사용
+          # 만약 "Allow GitHub Actions to create and approve pull requests" 설정이
+          # 저장소에서 활성화되지 않았다면, Personal Access Token을 사용해야 합니다.
+          # token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+
+      # 릴리즈가 생성되었을 때 추가 작업이 필요하면 여기에 추가
+      # 예: npm publish, Docker 이미지 빌드 등
+      - name: Log release info
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "Release created: ${{ steps.release.outputs.tag_name }}"
