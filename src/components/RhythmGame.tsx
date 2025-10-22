@@ -19,7 +19,7 @@ interface RhythmGameProps {
 export function RhythmGame({ beatMap, config }: RhythmGameProps) {
   const { gameState, setNotes, resetGame, notes, currentTime, setGameState, keyPressEffects } =
     useGameStore();
-  const { play, pause, reset } = useAudioPlayer(beatMap.audioUrl);
+  const { play, pause, reset } = useAudioPlayer(beatMap.audioUrl, beatMap.offset || 0);
   const [canvasWidth, setCanvasWidth] = useState<number>(400);
 
   useKeyboardInput(config);
@@ -31,9 +31,11 @@ export function RhythmGame({ beatMap, config }: RhythmGameProps) {
     );
   };
 
+  // Reset game on mount and when beatMap changes
   useEffect(() => {
+    resetGame();
     setNotes(beatMap.notes);
-  }, [beatMap.notes, setNotes]);
+  }, [beatMap, resetGame, setNotes]);
 
   // Check if game should finish (all notes processed)
   useEffect(() => {
@@ -63,9 +65,15 @@ export function RhythmGame({ beatMap, config }: RhythmGameProps) {
   };
 
   const handleReset = () => {
-    reset();
-    resetGame();
-    setNotes(beatMap.notes);
+    // Reset and immediately restart the game
+    resetGame(); // Reset game state first (sets gameState to 'ready', currentTime to 0)
+    reset(); // Reset audio player
+    setNotes(beatMap.notes); // Reload notes
+
+    // Small delay to ensure state is updated before playing
+    setTimeout(() => {
+      play();
+    }, 10);
   };
 
   return (

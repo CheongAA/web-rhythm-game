@@ -12,9 +12,10 @@ const queryConfig: DefaultOptions = {
     staleTime: 5 * 60 * 1000, // 5분
     gcTime: 10 * 60 * 1000, // 10분 (구 cacheTime)
     refetchOnWindowFocus: false, // 창 포커스 시 재요청 안 함
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: unknown) => {
       // 4xx 에러는 재시도하지 않음
-      if (error?.response?.status >= 400 && error?.response?.status < 500) {
+      const err = error as { response?: { status?: number } };
+      if (err?.response?.status && err.response.status >= 400 && err.response.status < 500) {
         return false;
       }
       return failureCount < 2; // 최대 2회 재시도
@@ -23,7 +24,7 @@ const queryConfig: DefaultOptions = {
   },
   mutations: {
     retry: false, // Mutation은 재시도 안 함
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // [로깅] Mutation 에러
       logger.error('[Mutation Error]', error);
     },

@@ -42,4 +42,5 @@ export const sampleBeatMap: BeatMap = {
   audioUrl: '', // You can add a URL to an audio file here
   bpm: 120,
   notes: generateSampleNotes(),
+  offset: 2000, // 2 seconds lead time
 };

@@ -40,4 +40,5 @@ export interface BeatMap {
   audioUrl: string;
   bpm: number;
   notes: Note[];
+  offset?: number; // milliseconds - delay before music starts
 }

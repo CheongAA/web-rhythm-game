@@ -199,10 +199,10 @@ function drawNote(
 ) {
   const timeDiff = note.timing - currentTime;
   const y = HIT_LINE_Y - (timeDiff / 1000) * noteSpeed * scale;
-  const CANVAS_HEIGHT = HIT_LINE_Y + 100 * scale;
 
-  // Only draw if note is visible
-  if (y < -NOTE_HEIGHT || y > CANVAS_HEIGHT) return;
+  // Only draw if note is visible on screen (0 to HIT_LINE_Y + a bit below)
+  // Don't draw notes that are still above the canvas
+  if (y < 0 || y > HIT_LINE_Y + 100) return;
 
   const x = note.lane * LANE_WIDTH;
   const width = LANE_WIDTH - 10 * scale;
